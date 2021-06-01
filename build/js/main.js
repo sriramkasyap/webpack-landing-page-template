@@ -15,7 +15,7 @@
   \*************************/
 /***/ (() => {
 
-eval("console.log(\"Hello World\");\n\n\n//# sourceURL=webpack://test/./src/js/index.js?");
+eval("console.log(\"Hello World\");\ndocument.getElementsByTagName(\"body\")[0].style.backgroundColor = \"red\";\n\n\n//# sourceURL=webpack://test/./src/js/index.js?");
 
 /***/ })
 
