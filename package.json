@@ -5,13 +5,15 @@
   "main": "src/js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --open"
+    "start": "webpack serve --open",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "css-loader": "^5.2.6",
+    "mini-css-extract-plugin": "^1.6.0",
     "node-sass": "^6.0.0",
     "sass-loader": "^12.0.0",
     "style-loader": "^2.0.0",

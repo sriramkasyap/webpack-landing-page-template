@@ -2,6 +2,7 @@ var path = require("path");
 var fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 var htmlFiles = fs
   .readdirSync(path.resolve(__dirname, "src"))
@@ -19,6 +20,9 @@ module.exports = {
   devtool: "source-map",
   plugins: [
     new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "style.css",
+    }),
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src", htm),
@@ -31,8 +35,8 @@ module.exports = {
       {
         test: /\.scss/,
         use: [
-          // Creates `style` nodes from JS strings
-          "style-loader",
+          // Load css into seperate file
+          MiniCssExtractPlugin.loader,
           // Translates CSS into CommonJS
           "css-loader",
           // Compiles Sass to CSS
