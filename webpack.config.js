@@ -15,6 +15,7 @@ module.exports = {
     filename: "js/main.js",
     path: path.resolve(__dirname, "build"),
   },
+  devtool: "source-map",
   plugins: [
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
