@@ -1,6 +1,7 @@
 var path = require("path");
 var fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 var htmlFiles = fs
   .readdirSync(path.resolve(__dirname, "src"))
@@ -17,6 +18,7 @@ module.exports = {
   },
   devtool: "source-map",
   plugins: [
+    new CleanWebpackPlugin(),
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src", htm),
