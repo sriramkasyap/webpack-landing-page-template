@@ -3,6 +3,8 @@ var fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 var htmlFiles = fs
   .readdirSync(path.resolve(__dirname, "src"))
@@ -11,7 +13,7 @@ var htmlFiles = fs
 console.log("Templates:", htmlFiles);
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   entry: "./src/js/index.js",
   output: {
     filename: "js/main.js",
@@ -21,7 +23,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
-      filename: "style.css",
+      filename: "css/style.min.css",
     }),
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
@@ -43,6 +45,14 @@ module.exports = {
           "sass-loader",
         ],
       },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+      // `...`,
+      new CssMinimizerPlugin(),
+      new TerserPlugin(),
     ],
   },
 };
