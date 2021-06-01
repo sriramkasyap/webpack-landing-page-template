@@ -10,21 +10,11 @@ var htmlFiles = fs
   .readdirSync(path.resolve(__dirname, "src"))
   .filter((fil) => fil.endsWith(".html"));
 
-console.log("Templates:", htmlFiles);
-
 module.exports = {
-  mode: "production",
   entry: "./src/js/index.js",
-  output: {
-    filename: "js/main.js",
-    path: path.resolve(__dirname, "build"),
-  },
-  devtool: "source-map",
   plugins: [
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: "css/style.min.css",
-    }),
+
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src", htm),
@@ -45,14 +35,6 @@ module.exports = {
           "sass-loader",
         ],
       },
-    ],
-  },
-  optimization: {
-    minimizer: [
-      // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
-      // `...`,
-      new CssMinimizerPlugin(),
-      new TerserPlugin(),
     ],
   },
 };
