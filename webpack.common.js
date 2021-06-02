@@ -36,6 +36,17 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           // Translates CSS into CommonJS
           "css-loader",
+          {
+            loader: "postcss-loader", // Run post css actions
+            options: {
+              postcssOptions: {
+                plugins: function () {
+                  // post css plugins, can be exported to postcss.config.js
+                  return [require("precss"), require("autoprefixer")];
+                },
+              },
+            },
+          },
           // Compiles Sass to CSS
           "sass-loader",
         ],
@@ -52,7 +63,11 @@ module.exports = {
             loader: "url-loader",
           },
         ],
-        type: "javascript/auto",
+        type: "asset/resource",
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: "asset/resource",
       },
     ],
   },
