@@ -10,6 +10,7 @@ module.exports = merge(common, {
   output: {
     filename: "js/main.[hash].js",
     path: path.resolve(__dirname, "build"),
+    assetModuleFilename: "assets/[hash][ext][query]",
   },
   optimization: {
     minimizer: [
