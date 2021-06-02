@@ -24,7 +24,7 @@ bootstrap_dir=$(find $dir_path -mindepth 1 -maxdepth 1 -type d)
 
 echo "Creating inner directories"
 mkdir src src/assets src/scss src/js 
-touch .prettierrc .gitignore src/index.html src/scss/style.scss src/scss/_universal.scss src/scss/_style_xs.scss src/scss/_style_sm.scss src/scss/_style_md.scss src/scss/_style_lg.scss src/scss/_style_xl.scss  src/scss/_style_xxl.scss src/js/index.js webpack.dev.js webpack.common.js webpack.prod.js package.json
+touch .prettierrc .gitignore src/index.html src/scss/style.scss src/scss/_universal.scss src/scss/_style_xs.scss src/scss/_style_sm.scss src/scss/_style_md.scss src/scss/_style_lg.scss src/scss/_style_xl.scss  src/scss/_style_xxl.scss src/index.js src/js/main.js webpack.dev.js webpack.common.js webpack.prod.js package.json
 
 mv $bootstrap_dir/scss src/scss/bootstrap
 mv src/scss/bootstrap/bootstrap-grid.scss src/scss/bootstrap/_bootstrap-grid.scss
@@ -376,7 +376,12 @@ cat > src/scss/_style_xxl.scss <<EOF
 EOF
 
 echo "Creating index.js"
-touch src/js/index.js
+cat > src/index.js <<EOF
+import "./scss/style.scss";
+import "bootstrap";
+import "./js/main";
+
+EOF
 
 
 echo "Writing webpack.common.js"
@@ -395,50 +400,62 @@ cat > webpack.common.js <<EOF
     .filter((fil) => fil.endsWith(".html"));
 
     module.exports = {
-    entry: "./src/js/index.js",
-    plugins: [
-        new CleanWebpackPlugin(),
-        new webpack.ProvidePlugin({
-        $: require.resolve("jquery"),
-        jQuery: require.resolve("jquery"),
-        "window.jQuery": require.resolve("jquery"),
-        }),
-        ...htmlFiles.map((htm) => {
-        return new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "src", htm),
-            filename: htm,
-        });
-        }),
-    ],
-    module: {
-        rules: [
-        {
-            test: /\.scss/,
-            use: [
-            // Load css into seperate file
-            MiniCssExtractPlugin.loader,
-            // Translates CSS into CommonJS
-            "css-loader",
-            // Compiles Sass to CSS
-            "sass-loader",
-            ],
-        },
-        {
-            test: /\.html/,
-            use: ["html-loader"],
-        },
-
-        {
-            test: /\.(png|jpg|gif)$/i,
-            use: [
+        entry: "./src/index.js",
+        plugins: [
+            new CleanWebpackPlugin(),
+            new webpack.ProvidePlugin({
+            $: require.resolve("jquery"),
+            jQuery: require.resolve("jquery"),
+            "window.jQuery": require.resolve("jquery"),
+            }),
+            ...htmlFiles.map((htm) => {
+            return new HtmlWebpackPlugin({
+                template: path.resolve(__dirname, "src", htm),
+                filename: htm,
+            });
+            }),
+        ],
+        module: {
+            rules: [
             {
-                loader: "url-loader",
+                test: /\.scss/,
+                use: [
+                // Load css into seperate file
+                MiniCssExtractPlugin.loader,
+                // Translates CSS into CommonJS
+                "css-loader",
+                {
+                    loader: "postcss-loader", // Run post css actions
+                    options: {
+                    postcssOptions: {
+                        plugins: [require("autoprefixer")],
+                    },
+                    },
+                },
+                // Compiles Sass to CSS
+                "sass-loader",
+                ],
+            },
+            {
+                test: /\.html/,
+                use: ["html-loader"],
+            },
+
+            {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                {
+                    loader: "url-loader",
+                },
+                ],
+                type: "asset/resource",
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                type: "asset/resource",
             },
             ],
-            type: "javascript/auto",
         },
-        ],
-    },
     };
 
 EOF
@@ -480,9 +497,12 @@ cat > webpack.prod.js <<EOF
         output: {
             filename: "js/main.[hash].js",
             path: path.resolve(__dirname, "build"),
+            assetModuleFilename: "assets/[hash][ext][query]",
         },
         optimization: {
             minimizer: [
+            // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+            // `...`,
             new CssMinimizerPlugin(),
             new TerserPlugin(),
             ],
@@ -493,42 +513,47 @@ cat > webpack.prod.js <<EOF
             }),
         ],
     });
+
 EOF
 
 echo "Writing to package.json"
 cat > package.json <<EOF
 {
-    "name": "$project_name",
-    "author": "Sriram Kasyap Meduri",
-    "version": "1.0.4",
-    "license": "GPL-2.0",
-    "main": "src/js/index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "webpack serve --open --config webpack.dev.js",
-        "build": "webpack --config webpack.prod.js"
-    },
-    "dependencies": {
-        "@popperjs/core": "^2.9.2",
-        "bootstrap": "^5.0.1",
-        "jquery": "^3.6.0"
-    },
-    "devDependencies": {
-        "clean-webpack-plugin": "^4.0.0-alpha.0",
-        "css-loader": "^5.2.6",
-        "css-minimizer-webpack-plugin": "^3.0.1",
-        "html-loader": "^2.1.2",
-        "mini-css-extract-plugin": "^1.6.0",
-        "node-sass": "^6.0.0",
-        "sass-loader": "^12.0.0",
-        "style-loader": "^2.0.0",
-        "terser-webpack-plugin": "^5.1.3",
-        "webpack": "^5.38.1",
-        "webpack-cli": "^4.7.0",
-        "webpack-dev-server": "^3.11.2",
-        "webpack-merge": "^5.7.3",
-        "html-webpack-plugin": "^5.3.1"
-    }
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.2.6",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "css-loader": "^5.2.6",
+    "css-minimizer-webpack-plugin": "^3.0.1",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.1",
+    "mini-css-extract-plugin": "^1.6.0",
+    "node-sass": "^6.0.0",
+    "postcss": "^8.3.0",
+    "postcss-loader": "^5.3.0",
+    "sass-loader": "^12.0.0",
+    "style-loader": "^2.0.0",
+    "terser-webpack-plugin": "^5.1.3",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.7.3"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.9.2",
+    "bootstrap": "^5.0.1",
+    "jquery": "^3.6.0"
+  }
 }
 
 EOF
@@ -538,7 +563,7 @@ code $dir_path
 code $dir_path/src/index.html
 code $dir_path/src/scss/_style_xs.scss
 code $dir_path/src/scss/_universal.scss
-code $dir_path/src/js/index.js
+code $dir_path/src/js/main.js
 
 
 cd $dir_path

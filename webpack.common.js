@@ -12,7 +12,7 @@ var htmlFiles = fs
   .filter((fil) => fil.endsWith(".html"));
 
 module.exports = {
-  entry: "./src/js/index.js",
+  entry: "./src/index.js",
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.ProvidePlugin({
