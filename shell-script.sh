@@ -558,6 +558,9 @@ cat > package.json <<EOF
 
 EOF
 
+echo "Installing NPM modules"
+npm i && npm start
+
 
 code $dir_path
 code $dir_path/src/index.html
@@ -571,5 +574,3 @@ cd $dir_path
 
 open $dir_path
 
-echo "Installing NPM modules"
-npm i && npm start
