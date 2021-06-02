@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
 
 var htmlFiles = fs
   .readdirSync(path.resolve(__dirname, "src"))
@@ -14,7 +15,11 @@ module.exports = {
   entry: "./src/js/index.js",
   plugins: [
     new CleanWebpackPlugin(),
-
+    new webpack.ProvidePlugin({
+      $: require.resolve("jquery"),
+      jQuery: require.resolve("jquery"),
+      "window.jQuery": require.resolve("jquery"),
+    }),
     ...htmlFiles.map((htm) => {
       return new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "src", htm),

@@ -388,6 +388,7 @@ cat > webpack.common.js <<EOF
     const MiniCssExtractPlugin = require("mini-css-extract-plugin");
     const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
     const TerserPlugin = require("terser-webpack-plugin");
+    const webpack = require("webpack");
 
     var htmlFiles = fs
     .readdirSync(path.resolve(__dirname, "src"))
@@ -397,7 +398,11 @@ cat > webpack.common.js <<EOF
     entry: "./src/js/index.js",
     plugins: [
         new CleanWebpackPlugin(),
-
+        new webpack.ProvidePlugin({
+        $: require.resolve("jquery"),
+        jQuery: require.resolve("jquery"),
+        "window.jQuery": require.resolve("jquery"),
+        }),
         ...htmlFiles.map((htm) => {
         return new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", htm),
@@ -503,7 +508,11 @@ cat > package.json <<EOF
         "start": "webpack serve --open --config webpack.dev.js",
         "build": "webpack --config webpack.prod.js"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@popperjs/core": "^2.9.2",
+        "bootstrap": "^5.0.1",
+        "jquery": "^3.6.0"
+    },
     "devDependencies": {
         "clean-webpack-plugin": "^4.0.0-alpha.0",
         "css-loader": "^5.2.6",
