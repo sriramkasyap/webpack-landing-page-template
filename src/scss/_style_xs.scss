@@ -12,5 +12,13 @@
     img {
       max-width: 200px;
     }
+    input {
+      color: white;
+      text-align: center;
+      border-bottom: 1px solid black;
+      &::placeholder {
+        color: white;
+      }
+    }
   }
 }
