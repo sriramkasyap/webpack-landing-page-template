@@ -1,4 +1,4 @@
-# Landing Page scaffolder - Webpack version
+# Landing Page scaffolder - with Webpack
 
 Quick shell script to create a simple HTML landing page folder configured with SASS, Webpack, Bootstrap and jQuery
 
